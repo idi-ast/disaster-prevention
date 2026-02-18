@@ -47,7 +47,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
         style: "mapbox://styles/mapbox/satellite-v9",
       },
     }),
-    []
+    [],
   );
 
   const handleMapLoad = useCallback(() => {

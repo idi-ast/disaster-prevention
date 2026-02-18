@@ -3,8 +3,8 @@ import type { MapCenter } from "../types";
 export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
 
 export const DEFAULT_CENTER: MapCenter = {
-  longitude: -72.9411,
-  latitude: -41.4689,
+  longitude: -76.76690150776584,
+  latitude: 5.804109666166601,
 };
 
 export const MAP_ZOOM_LEVEL = 11;
