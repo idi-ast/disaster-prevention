@@ -15,7 +15,7 @@ function Template() {
             <Header useConfigApp={useConfigApp} />
             <div className="w-1/2 absolute left-[50%] z-30 top-0 m-0.5 -translate-x-1/2 bg-linear-to-l from-transparent via-bg-400/60 to-transparent h-[0.6px] "></div>
           </div>
-          <main className="flex-1 overflow-auto ">
+          <main className="flex-1 overflow-hidden">
             <Outlet />
           </main>
         </div>

@@ -17,9 +17,9 @@ function RightBar({
         <h3>{title}</h3>
         <h5>{subTitle}</h5>
       </div>
-      <div className="flex flex-col justify-center items-center flex-1">
+      <div className="flex flex-col justify-center items-center flex-1 min-h-0 overflow-hidden">
         {overlays}
-        <div className="p-1 flex-1 w-full">{children}</div>
+        <div className="p-1 flex-1 w-full min-h-0 overflow-hidden">{children}</div>
       </div>
     </div>
   );

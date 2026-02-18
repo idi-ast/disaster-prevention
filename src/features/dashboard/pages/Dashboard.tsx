@@ -4,7 +4,9 @@ import BaseMap from "@/components/baseMap/components/BaseMap";
 import { BarChartWrapper } from "@/libs/recharts";
 import { Marker } from "react-map-gl";
 import MarkerSensor from "@/features/dashboard/components/markers/MarkerSensor";
-import MarkerSismo from "../components/markers/MarkerSismo";
+import SismoLayer from "../components/SismoLayer";
+import SismoResumen from "../components/SismoResumen";
+import { SISMOS_MOCK, SISMO_RESUMEN_MOCK } from "../lib/sismos.mock";
 
 // Ejemplo de uso
 const actividadAlertas = [
@@ -26,12 +28,13 @@ function Dashboard() {
             latitude: 5.804109666166601,
           }}
         >
+          {/* Sensor principal */}
           <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
             <MarkerSensor />
           </Marker>
-          <Marker latitude={5.304109666166601} longitude={-78.939015}>
-            <MarkerSismo />
-          </Marker>
+
+          {/* Capa de sismos en el radio del sensor */}
+          <SismoLayer sismos={SISMOS_MOCK} />
         </BaseMap>
         <BottomBar
           title="Actividad de Alertas"
@@ -50,19 +53,12 @@ function Dashboard() {
           />
         </BottomBar>
       </div>
-      <div className="col-span-2">
+      <div className="col-span-2 h-full overflow-hidden">
         <RightBar
           title="Centro de Actividad"
           subTitle="Monitoreo preventivo"
-          overlays={
-            <div className="px-3 border-t border-b border-border">
-              <small>Overlays</small>
-            </div>
-          }
         >
-          <div className="bg-bg-300 h-full w-full rounded-xl ">
-            <small>d</small>
-          </div>
+          <SismoResumen sismos={SISMOS_MOCK} stats={SISMO_RESUMEN_MOCK} />
         </RightBar>
       </div>
     </div>

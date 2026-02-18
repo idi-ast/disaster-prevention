@@ -83,44 +83,21 @@
   }
 }
 
-.marker-sismo {
-  background-color: rgb(255, 225, 0);
-  border-radius: 50%;
-  filter: blur(3px);
-  -webkit-filter: blur(3px);
-}
 
-.marker-sismo:before,
-.marker-sismo:after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
-  background-color: rgba(255, 191, 0, 0.291);
-  border-radius: 50%;
-  animation: latidos 2s infinite;
-  -webkit-animation: latidos 2s infinite;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-}
-
-@keyframes latidos {
+/* ── MarkerSismo ── */
+@keyframes sismo-pulse {
   0% {
-    transition: all 2s;
-    -webkit-transition: all 2s;
-    -moz-transition: all 2s;
-    -ms-transition: all 2s;
-    -o-transition: all 2s;
-    filter: blur(1px);
-    -webkit-filter: blur(1px);
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(3.5);
+    opacity: 0;
   }
   100% {
-    filter: blur(3px);
-    -webkit-filter: blur(3px);
+    transform: scale(1);
+    opacity: 0;
   }
 }
+
+
