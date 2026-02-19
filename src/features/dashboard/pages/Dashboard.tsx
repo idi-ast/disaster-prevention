@@ -6,6 +6,7 @@ import { BarChartWrapper } from "@/libs/recharts";
 // import MarkerSensor from "@/features/dashboard/components/markers/MarkerSensor";
 import SismoLayer from "../components/SismoLayer";
 import DangerZoneLayer from "../components/DangerZoneLayer";
+import GyroscopeLayer from "../components/GyroscopeLayer";
 import SismoResumen from "../components/SismoResumen";
 import { useSismos } from "@/features/sismos/hooks/useSismos";
 import type {
@@ -16,6 +17,7 @@ import type {
 import type { Data } from "@/features/sismos/types/sismos.type";
 import { useEffect, useState } from "react";
 import { useDangerZones } from "@/features/dangerzone/hooks/useDangerZones";
+import { useGyroscope } from "@/features/gyroscope/hooks/useGyroscope";
 
 function getMagnitudIntensidad(magnitude: number): SismoIntensidad {
   if (magnitude < 2.0) return "imperceptible";
@@ -71,8 +73,7 @@ const actividadAlertas = [
 function Dashboard() {
   const { data: sismos, isLoading } = useSismos();
   const { data: dangerZones } = useDangerZones();
-
-  console.log("mis dangerzonezs", dangerZones);
+  const { data: gyroscope } = useGyroscope();
 
   const sismosList: SismoData[] =
     sismos && sismos.data.length > 0 ? mapToSismoData(sismos.data) : [];
@@ -117,6 +118,8 @@ function Dashboard() {
 
           {/* Zonas de peligro */}
           <DangerZoneLayer dangerZones={dangerZones} />
+          {/* Giroscopios */}
+          <GyroscopeLayer gyroscope={gyroscope} />
           {/* Sismos */}
           {sismos && <SismoLayer sismos={sismos} />}
         </BaseMap>
