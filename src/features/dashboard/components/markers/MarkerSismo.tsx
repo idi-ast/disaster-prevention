@@ -7,15 +7,34 @@ interface MarkerSismoProps {
   zona: string;
 }
 
-const NIVEL_CONFIG: Record<SismoNivel, { color: string; size: number; pulse: string }> = {
-  bajo:     { color: "rgb(253, 224, 71, 0.8)",  size: 10, pulse: "rgba(253, 224, 71, 0.25)"  }, // yellow-300
-  medio:    { color: "rgb(251, 146, 60, 0.8)",  size: 14, pulse: "rgba(251, 146, 60, 0.25)"  }, // orange-400
-  alto:     { color: "rgb(239, 68, 68, 0.8)",   size: 18, pulse: "rgba(239, 68, 68, 0.25)"   }, // red-500
-  crítico:  { color: "rgb(220, 38, 38, 0.8)",   size: 42, pulse: "rgba(220, 38, 38, 0.25)"   }, // red-600
+const NIVEL_CONFIG: Record<
+  SismoNivel,
+  { color: string; size: number; pulse: string }
+> = {
+  bajo: {
+    color: "rgb(253, 224, 71, 0.8)",
+    size: 10,
+    pulse: "rgba(253, 224, 71, 0.25)",
+  }, // yellow-300
+  medio: {
+    color: "rgb(251, 146, 60, 0.8)",
+    size: 14,
+    pulse: "rgba(251, 146, 60, 0.25)",
+  }, // orange-400
+  alto: {
+    color: "rgb(239, 68, 68, 0.8)",
+    size: 18,
+    pulse: "rgba(239, 68, 68, 0.25)",
+  }, // red-500
+  crítico: {
+    color: "rgb(220, 38, 38, 0.8)",
+    size: 42,
+    pulse: "rgba(220, 38, 38, 0.25)",
+  }, // red-600
 };
 
 function MarkerSismo({ magnitud, nivel, zona }: MarkerSismoProps) {
-  const config = NIVEL_CONFIG[nivel];
+  const config = NIVEL_CONFIG[nivel] ?? NIVEL_CONFIG["bajo"];
 
   return (
     <div
@@ -51,8 +70,8 @@ function MarkerSismo({ magnitud, nivel, zona }: MarkerSismoProps) {
           style={{ fontSize: "11px" }}
         >
           <span className="font-semibold">{zona}</span>
-          <br />
-          M{magnitud.toFixed(1)} · <span style={{ color: config.color }}>{nivel.toUpperCase()}</span>
+          <br />M{magnitud.toFixed(1)} ·{" "}
+          <span style={{ color: config.color }}>{nivel.toUpperCase()}</span>
         </div>
         <div className="w-2 h-2 bg-bg-100 border-r border-b border-border rotate-45 -mt-1" />
       </div>

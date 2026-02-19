@@ -6,7 +6,56 @@ import { Marker } from "react-map-gl";
 import MarkerSensor from "@/features/dashboard/components/markers/MarkerSensor";
 import SismoLayer from "../components/SismoLayer";
 import SismoResumen from "../components/SismoResumen";
-import { SISMOS_MOCK, SISMO_RESUMEN_MOCK } from "../lib/sismos.mock";
+import { useSismos } from "@/features/sismos/hooks/useSismos";
+import type {
+  SismoData,
+  SismoIntensidad,
+  SismoResumenStats,
+} from "../types/sismo.types";
+import type { Data } from "@/features/sismos/types/sismos.type";
+
+function getMagnitudIntensidad(magnitude: number): SismoIntensidad {
+  if (magnitude < 2.0) return "imperceptible";
+  if (magnitude < 4.0) return "débil";
+  if (magnitude < 5.0) return "moderado";
+  if (magnitude < 6.0) return "fuerte";
+  return "severo";
+}
+
+function mapToSismoData(data: Data[]): SismoData[] {
+  return data.map((s) => ({
+    id: s.id,
+    zona: s.place,
+    descripcionZona: "",
+    magnitud: s.magnitude,
+    intensidad: getMagnitudIntensidad(s.magnitude),
+    nivel: s.level,
+    profundidad: s.depth,
+    movimientos: 1,
+    coordenadas: { latitude: s.latitude, longitude: s.longitude },
+    ultimoRegistro: s.time,
+  }));
+}
+
+function computeStats(sismos: SismoData[]): SismoResumenStats {
+  const nivelOrder = ["bajo", "medio", "alto", "crítico"] as const;
+  return {
+    totalEventos: sismos.length,
+    magnitudPromedio:
+      Math.round(
+        (sismos.reduce((acc, s) => acc + s.magnitud, 0) / sismos.length) * 10,
+      ) / 10,
+    magnitudMaxima: Math.max(...sismos.map((s) => s.magnitud)),
+    zonasMasActiva: sismos.reduce((prev, curr) =>
+      curr.magnitud > prev.magnitud ? curr : prev,
+    ).zona,
+    nivelAlerta: sismos.reduce((prev, curr) =>
+      nivelOrder.indexOf(curr.nivel) > nivelOrder.indexOf(prev.nivel)
+        ? curr
+        : prev,
+    ).nivel,
+  };
+}
 
 // Ejemplo de uso
 const actividadAlertas = [
@@ -18,6 +67,14 @@ const actividadAlertas = [
 ];
 
 function Dashboard() {
+  const { data: sismos, isLoading } = useSismos();
+
+  const sismosList: SismoData[] =
+    sismos && sismos.data.length > 0 ? mapToSismoData(sismos.data) : [];
+
+  const sismoStats: SismoResumenStats | null =
+    sismosList.length > 0 ? computeStats(sismosList) : null;
+
   return (
     <div className="w-full h-full grid grid-cols-12">
       <div className="col-span-10 h-full flex flex-col">
@@ -28,13 +85,10 @@ function Dashboard() {
             latitude: 5.804109666166601,
           }}
         >
-          {/* Sensor principal */}
           <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
             <MarkerSensor />
           </Marker>
-
-          {/* Capa de sismos en el radio del sensor */}
-          <SismoLayer sismos={SISMOS_MOCK} />
+          <SismoLayer sismos={sismos} />
         </BaseMap>
         <BottomBar
           title="Actividad de Alertas"
@@ -54,11 +108,18 @@ function Dashboard() {
         </BottomBar>
       </div>
       <div className="col-span-2 h-full overflow-hidden">
-        <RightBar
-          title="Centro de Actividad"
-          subTitle="Monitoreo preventivo"
-        >
-          <SismoResumen sismos={SISMOS_MOCK} stats={SISMO_RESUMEN_MOCK} />
+        <RightBar title="Centro de Actividad" subTitle="Monitoreo preventivo">
+          {isLoading && (
+            <div className="p-4 text-sm text-text-200">Cargando sismos...</div>
+          )}
+          {!isLoading && sismoStats && (
+            <SismoResumen sismos={sismosList} stats={sismoStats} />
+          )}
+          {!isLoading && !sismoStats && (
+            <div className="p-4 text-sm text-text-200">
+              Sin datos sísmicos disponibles.
+            </div>
+          )}
         </RightBar>
       </div>
     </div>

@@ -1,7 +1,7 @@
 //  Configuración de empresa
 import logoWhite from "@/assets/company/AST-LOGO_BLANCO.png";
 import logoBlack from "@/assets/company/AST-LOGO_NEGRO.png";
-import { IconLayoutDashboard } from "@tabler/icons-react";
+import { IconCircuitResistor, IconLayoutDashboard } from "@tabler/icons-react";
 import React from "react";
 import Dashboard from "@/features/dashboard/pages/Dashboard";
 
@@ -11,6 +11,7 @@ import { UserProfilePage } from "@/template/user-profile";
 import { CompaniesPage } from "@/template/companies";
 import { ServicesPanelPage } from "@/template/services-panel";
 import { NotificationsPage } from "@/template/notifications";
+import SismosPage from "@/features/sismos/pages/SismosPage";
 
 const name = import.meta.env.VITE_COMPANY_NAME;
 const address = import.meta.env.VITE_COMPANY_ADDRESS;
@@ -94,6 +95,15 @@ export const configServer = () => {
       link: "/",
       icon: IconLayoutDashboard,
       component: Dashboard,
+      target: false,
+      state: true,
+    },
+    {
+      id: 2,
+      name: "Sismos",
+      link: "/sismos",
+      icon: IconCircuitResistor,
+      component: SismosPage,
       target: false,
       state: true,
     },

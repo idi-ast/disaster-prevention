@@ -34,7 +34,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
       dark: {
         name: "Mapa Oscuro",
         icon: <IconWorld size={20} />,
-        style: "mapbox://styles/mapbox/dark-v11",
+        style: "mapbox://styles/mapbox/dark-v10",
       },
       satellite: {
         name: "Satelital Clásico",
@@ -75,9 +75,10 @@ const BaseMap: React.FC<BaseMapProps> = ({
         attributionControl={false}
         reuseMaps
         maxPitch={85}
-        renderWorldCopies={false}
-        optimizeForTerrain={false}
+        renderWorldCopies={true}
+        optimizeForTerrain={true}
         fadeDuration={0}
+        projection="mercator"
         onLoad={handleMapLoad}
       >
         <div className="absolute right-0 top-0 z-10 bg-bg-100 h-full flex flex-col gap-2 p-2">
