@@ -2,9 +2,10 @@ import BottomBar from "@/components/bars/BottomBar";
 import RightBar from "@/components/bars/RightBar";
 import BaseMap from "@/components/baseMap/components/BaseMap";
 import { BarChartWrapper } from "@/libs/recharts";
-import { Marker } from "react-map-gl";
-import MarkerSensor from "@/features/dashboard/components/markers/MarkerSensor";
+// import { Marker } from "react-map-gl";
+// import MarkerSensor from "@/features/dashboard/components/markers/MarkerSensor";
 import SismoLayer from "../components/SismoLayer";
+import DangerZoneLayer from "../components/DangerZoneLayer";
 import SismoResumen from "../components/SismoResumen";
 import { useSismos } from "@/features/sismos/hooks/useSismos";
 import type {
@@ -13,6 +14,8 @@ import type {
   SismoResumenStats,
 } from "../types/sismo.types";
 import type { Data } from "@/features/sismos/types/sismos.type";
+import { useEffect, useState } from "react";
+import { useDangerZones } from "@/features/dangerzone/hooks/useDangerZones";
 
 function getMagnitudIntensidad(magnitude: number): SismoIntensidad {
   if (magnitude < 2.0) return "imperceptible";
@@ -57,7 +60,6 @@ function computeStats(sismos: SismoData[]): SismoResumenStats {
   };
 }
 
-// Ejemplo de uso
 const actividadAlertas = [
   { nombre: "Alerta 1", sismos: 0, tsunamis: 2 },
   { nombre: "Alerta 2", sismos: 2, tsunamis: 0 },
@@ -68,12 +70,26 @@ const actividadAlertas = [
 
 function Dashboard() {
   const { data: sismos, isLoading } = useSismos();
+  const { data: dangerZones } = useDangerZones();
+
+  console.log("mis dangerzonezs", dangerZones);
 
   const sismosList: SismoData[] =
     sismos && sismos.data.length > 0 ? mapToSismoData(sismos.data) : [];
 
   const sismoStats: SismoResumenStats | null =
     sismosList.length > 0 ? computeStats(sismosList) : null;
+
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLoading(true);
+    }, 2000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <div className="w-full h-full grid grid-cols-12">
@@ -85,10 +101,21 @@ function Dashboard() {
             latitude: 5.804109666166601,
           }}
         >
-          <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
+          {/* <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
             <MarkerSensor />
-          </Marker>
-          <SismoLayer sismos={sismos} />
+          </Marker> */}
+          {!loading && (
+            <div className="absolute top-0 left-0 w-full h-full bg-bg-200 ">
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+                  <p className="mt-2 text-sm text-text-200">Iniciando mapa</p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DangerZoneLayer dangerZones={dangerZones} />
+          {sismos && <SismoLayer sismos={sismos} />}
         </BaseMap>
         <BottomBar
           title="Actividad de Alertas"
