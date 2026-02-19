@@ -114,7 +114,10 @@ function Dashboard() {
               </div>
             </div>
           )}
+
+          {/* Zonas de peligro */}
           <DangerZoneLayer dangerZones={dangerZones} />
+          {/* Sismos */}
           {sismos && <SismoLayer sismos={sismos} />}
         </BaseMap>
         <BottomBar

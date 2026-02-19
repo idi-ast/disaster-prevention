@@ -267,7 +267,7 @@ const SismoLayer = memo(function SismoLayer({ sismos }: SismoLayerProps) {
           closeOnClick={false}
           maxWidth="220px"
         >
-          <div className="text-xs leading-snug p-1">
+          <div className="text-xs leading-snug text-text-400 p-1">
             <p className="font-semibold mb-1 truncate">{selected.place}</p>
             <p>
               Magnitud: <strong>M{selected.magnitude.toFixed(1)}</strong>
