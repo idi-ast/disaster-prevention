@@ -15,7 +15,8 @@ import type {
   SismoResumenStats,
 } from "../types/sismo.types";
 import type { Data } from "@/features/sismos/types/sismos.type";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import type { MapRef } from "react-map-gl";
 import { useDangerZones } from "@/features/dangerzone/hooks/useDangerZones";
 import { useGyroscope } from "@/features/gyroscope/hooks/useGyroscope";
 import { useDesastresGlobales } from "@/features/desastresGlobales/hooks/useDesastresGlobales";
@@ -86,6 +87,12 @@ function Dashboard() {
     sismosList.length > 0 ? computeStats(sismosList) : null;
 
   const [loading, setLoading] = useState(false);
+  const mapRef = useRef<MapRef | null>(null);
+
+  const handleFocusLocation = useCallback((lng: number, lat: number) => {
+    mapRef.current?.flyTo({ center: [lng, lat], zoom: 8, duration: 1200 });
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setLoading(true);
@@ -104,6 +111,9 @@ function Dashboard() {
           initialCenter={{
             longitude: -76.76690150776584,
             latitude: 5.804109666166601,
+          }}
+          onMapRef={(ref) => {
+            mapRef.current = ref;
           }}
         >
           {/* <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
@@ -156,6 +166,7 @@ function Dashboard() {
             sismoStats={sismoStats}
             desastres={desastresGlobales}
             gyroscope={gyroscope}
+            onFocusLocation={handleFocusLocation}
           />
         </RightBar>
       </div>

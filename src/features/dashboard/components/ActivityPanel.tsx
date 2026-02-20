@@ -105,12 +105,15 @@ const LEVEL_NASA_COLOR: Record<string, string> = {
   crítico: "text-red-600",
 };
 
+type FocusFn = (lng: number, lat: number) => void;
+
 interface ActivityPanelProps {
   isLoadingSismos: boolean;
   sismosList: SismoData[];
   sismoStats: SismoResumenStats | null;
   desastres?: DesastresGlobalesTypes;
   gyroscope?: GyroscopeTypes;
+  onFocusLocation?: FocusFn;
 }
 
 export function ActivityPanel({
@@ -119,6 +122,7 @@ export function ActivityPanel({
   sismoStats,
   desastres,
   gyroscope,
+  onFocusLocation,
 }: ActivityPanelProps) {
   const [tab, setTab] = useState<Tab>("sismos");
 
@@ -171,10 +175,15 @@ export function ActivityPanel({
             isLoading={isLoadingSismos}
             sismosList={sismosList}
             stats={sismoStats}
+            onFocusLocation={onFocusLocation}
           />
         )}
-        {tab === "nasa" && <NasaPanel desastres={desastres} />}
-        {tab === "gyro" && <GyroPanel gyroscope={gyroscope} />}
+        {tab === "nasa" && (
+          <NasaPanel desastres={desastres} onFocusLocation={onFocusLocation} />
+        )}
+        {tab === "gyro" && (
+          <GyroPanel gyroscope={gyroscope} onFocusLocation={onFocusLocation} />
+        )}
       </div>
     </div>
   );
@@ -185,10 +194,12 @@ function SismosPanel({
   isLoading,
   sismosList,
   stats,
+  onFocusLocation,
 }: {
   isLoading: boolean;
   sismosList: SismoData[];
   stats: SismoResumenStats | null;
+  onFocusLocation?: FocusFn;
 }) {
   if (isLoading)
     return <div className="p-4 text-sm text-text-200">Cargando sismos...</div>;
@@ -251,7 +262,13 @@ function SismosPanel({
           .map((s) => (
             <div
               key={s.id}
-              className="rounded-lg border border-border bg-bg-200 px-3 py-2 flex flex-col gap-1"
+              onClick={() =>
+                onFocusLocation?.(
+                  s.coordenadas.longitude,
+                  s.coordenadas.latitude,
+                )
+              }
+              className="rounded-lg border border-border bg-bg-200 px-3 py-2 flex flex-col gap-1 cursor-pointer hover:border-text-300 transition-colors"
             >
               <div className="flex items-center justify-between gap-1">
                 <span className="text-xs font-semibold text-text-100 truncate leading-tight">
@@ -287,7 +304,13 @@ function SismosPanel({
 }
 
 // Panel NASA
-function NasaPanel({ desastres }: { desastres?: DesastresGlobalesTypes }) {
+function NasaPanel({
+  desastres,
+  onFocusLocation,
+}: {
+  desastres?: DesastresGlobalesTypes;
+  onFocusLocation?: FocusFn;
+}) {
   if (!desastres?.data.length)
     return (
       <div className="p-4 text-sm text-text-200">
@@ -366,7 +389,8 @@ function NasaPanel({ desastres }: { desastres?: DesastresGlobalesTypes }) {
         {desastres.data.map((d) => (
           <div
             key={d.id}
-            className="rounded-lg border border-border bg-bg-200 px-3 py-2 flex flex-col gap-1"
+            onClick={() => onFocusLocation?.(d.longitude, d.latitude)}
+            className="rounded-lg border border-border bg-bg-200 px-3 py-2 flex flex-col gap-1 cursor-pointer hover:border-text-300 transition-colors"
           >
             <div className="flex items-start justify-between gap-1">
               <div className="flex items-center gap-1.5 min-w-0">
@@ -402,7 +426,13 @@ function NasaPanel({ desastres }: { desastres?: DesastresGlobalesTypes }) {
 }
 
 // Panel Giroscopio
-function GyroPanel({ gyroscope }: { gyroscope?: GyroscopeTypes }) {
+function GyroPanel({
+  gyroscope,
+  onFocusLocation,
+}: {
+  gyroscope?: GyroscopeTypes;
+  onFocusLocation?: FocusFn;
+}) {
   if (!gyroscope?.gyro_devices.length)
     return (
       <div className="p-4 text-sm text-text-200">Sin sensores disponibles.</div>
@@ -454,7 +484,8 @@ function GyroPanel({ gyroscope }: { gyroscope?: GyroscopeTypes }) {
             return (
               <div
                 key={d.dev_eui}
-                className={`rounded-lg border bg-bg-200 px-3 py-2 flex flex-col gap-1.5 ${
+                onClick={() => onFocusLocation?.(d.longitude, d.latitude)}
+                className={`rounded-lg border bg-bg-200 px-3 py-2 flex flex-col gap-1.5 cursor-pointer hover:border-text-300 transition-colors ${
                   d.alert ? "border-red-400/50" : "border-border"
                 }`}
               >
