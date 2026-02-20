@@ -63,12 +63,15 @@ export function BackdoorAuthProvider({ children }: BackdoorAuthProviderProps) {
         return;
       }
       
-      // Si no es backdoor, usar autenticación real
-      try {
-        await authClient.signIn.email({ email, password });
-      } catch (err) {
-        setError((err as Error).message);
-        throw err;
+      // Si no es backdoor, usar autenticación real con la librería
+      // service_code se inyecta automáticamente en authClient (customFetchImpl)
+      // signIn.email() retorna { data, error } — nunca lanza excepción
+      const result = await authClient.signIn.email({ email, password });
+
+      if (result.error) {
+        const message = result.error.message || "Error al iniciar sesión";
+        setError(message);
+        throw new Error(message);
       }
     },
     []

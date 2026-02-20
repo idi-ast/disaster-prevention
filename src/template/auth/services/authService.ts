@@ -17,6 +17,7 @@ export const authService = {
       {
         email: data.email,
         password: data.password,
+        service_code: import.meta.env.VITE_APP_CODE,
       }
     );
     return response.data;
