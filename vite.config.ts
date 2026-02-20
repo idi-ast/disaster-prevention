@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
         // más corta capture primero las rutas del sistema de monitoreo.
         // El backend ya responde en /api-system/... así que no hay rewrite.
         "/api-system": {
-          target: env.VITE_API_SYSTEM_PROXY_TARGET || "http://10.20.7.97:8000",
+          target: env.VITE_API_SYSTEM_PROXY_TARGET,
           changeOrigin: true,
           secure: false,
         },

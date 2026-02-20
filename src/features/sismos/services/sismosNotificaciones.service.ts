@@ -25,7 +25,7 @@ export const sismosNotificacionesService = {
     period: PeriodFilter = "day",
   ): Promise<SismosNotificacionesResponse> => {
     const response = await apiSystem.get<SismosNotificacionesResponse>(
-      `/sismos/notificaciones`,
+      `/sismos/notificaciones/`,
       { params: { period } },
     );
     return response.data;

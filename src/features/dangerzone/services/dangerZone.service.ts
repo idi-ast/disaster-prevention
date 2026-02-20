@@ -3,7 +3,7 @@ import type { DangerZoneTypes } from "@/features/dangerzone/types/dangerZone.typ
 
 export const dangerZoneService = {
   getDangerZone: async (): Promise<DangerZoneTypes> => {
-    const response = await apiSystem.get<DangerZoneTypes>(`/dangerzone`);
+    const response = await apiSystem.get<DangerZoneTypes>(`/dangerzone/`);
     return response.data;
   },
 };
