@@ -7,6 +7,7 @@ import type {
 } from "../types/sismo.types";
 import type { DesastresGlobalesTypes } from "@/features/desastresGlobales/types/desastesGlobales.type";
 import type { GyroscopeTypes } from "@/features/gyroscope/types/gyroscope.type";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 type Tab = "sismos" | "nasa" | "gyro";
 
@@ -293,9 +294,14 @@ function SismosPanel({
                   · {s.profundidad} km
                 </span>
               </div>
-              <span className="text-xs text-text-300">
-                {formatRelative(s.ultimoRegistro)}
-              </span>
+              <div className="flex justify-between items-end gap-0.5 shrink-0">
+                <span className="text-xs text-text-300">
+                  {formatRelative(s.ultimoRegistro)}
+                </span>
+                <span className="text-[10px] text-text-300/70 font-mono">
+                  {formatAbsolute(s.ultimoRegistro)}
+                </span>
+              </div>
             </div>
           ))}
       </div>
@@ -412,6 +418,16 @@ function NasaPanel({
             <p className="text-[10px] text-text-300 leading-tight">
               {NASA_CATEGORY_ES[d.category] ?? d.category}
             </p>
+            {d.time && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-text-300">
+                  {formatRelative(d.time)}
+                </span>
+                <span className="text-[10px] text-text-300/70 font-mono">
+                  · {formatAbsolute(d.time)}
+                </span>
+              </div>
+            )}
             {d.description && (
               <p className="text-xs text-text-200 line-clamp-2 leading-tight">
                 {d.description}
@@ -497,7 +513,7 @@ function GyroPanel({
                   <div className="flex items-center gap-1.5 shrink-0">
                     {d.alert && (
                       <span className="text-xs font-bold text-red-400 animate-pulse">
-                        ⚠ ALERTA
+                        <IconAlertTriangle/> ALERTA
                       </span>
                     )}
                     <span
@@ -603,4 +619,15 @@ function formatRelative(isoDate: string): string {
   if (h > 24) return `hace ${Math.floor(h / 24)}d`;
   if (h > 0) return `hace ${h}h ${m}m`;
   return `hace ${m}m`;
+}
+
+function formatAbsolute(isoDate: string): string {
+  return new Date(isoDate).toLocaleString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }

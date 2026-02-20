@@ -3,9 +3,13 @@ import Header from "./header/Header";
 import Sidebar from "./sidebar/Sidebar";
 import { configServer } from "@/config/ConfigServer";
 import { DropdownProvider } from "@/components/ui/Dropdown";
+import { useSismosNotificaciones } from "@/features/sismos/hooks/useSismosNotificaciones";
 
 function Template() {
   const { useCompany, useConfigApp } = configServer();
+
+  // Inyecta automáticamente las notificaciones de sismos al store del template
+  useSismosNotificaciones({ period: "day", refetchInterval: 60_000 });
   return (
     <DropdownProvider>
       <div className="min-h-screen w-screen flex overflow-hidden">

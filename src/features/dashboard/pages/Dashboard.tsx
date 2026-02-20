@@ -118,31 +118,31 @@ function Dashboard() {
               mapRef.current = ref;
             }}
           >
-          {/* <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
+            {/* <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
             <MarkerSensor />
           </Marker> */}
-          {!loading && (
-            <div className="absolute top-0 left-0 w-full h-full bg-bg-200 ">
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-                  <p className="mt-2 text-sm text-text-200">Iniciando mapa</p>
+            {!loading && (
+              <div className="absolute top-0 left-0 w-full h-full bg-bg-200 ">
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+                    <p className="mt-2 text-sm text-text-200">Iniciando mapa</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Zonas de peligro */}
-          <DangerZoneLayer dangerZones={dangerZones} />
-          {/* Giroscopios */}
-          <GyroscopeLayer gyroscope={gyroscope} />
-          {/* Sismos */}
-          {sismos && <SismoLayer sismos={sismos} />}
-          {/* Desastres Globales */}
-          {desastresGlobales && (
-            <DesastresGlobalesLayer desastres={desastresGlobales} />
-          )}
-        </BaseMap>
+            {/* Zonas de peligro */}
+            <DangerZoneLayer dangerZones={dangerZones} />
+            {/* Giroscopios */}
+            <GyroscopeLayer gyroscope={gyroscope} />
+            {/* Sismos */}
+            {sismos && <SismoLayer sismos={sismos} />}
+            {/* Desastres Globales */}
+            {desastresGlobales && (
+              <DesastresGlobalesLayer desastres={desastresGlobales} />
+            )}
+          </BaseMap>
           <GyroFloatingPanel gyroscope={gyroscope} />
         </div>
         <BottomBar

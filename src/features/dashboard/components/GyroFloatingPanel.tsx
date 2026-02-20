@@ -2,7 +2,12 @@ import { useReducer, useEffect, useCallback } from "react";
 import { LineChartWrapper } from "@/libs/recharts";
 import type { GyroscopeTypes } from "@/features/gyroscope/types/gyroscope.type";
 import type { GyroDevices } from "@/features/gyroscope/types/gyroscope.type";
-import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconChevronDown,
+  IconChevronUp,
+  IconX,
+} from "@tabler/icons-react";
 
 const MAX_POINTS = 40;
 
@@ -235,7 +240,14 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
               isAlert ? "text-red-400" : "text-text-100"
             }`}
           >
-            {isAlert ? "⚠ Movimiento detectado" : "Monitor Giroscopio"}
+            {isAlert ? (
+              <>
+                <IconAlertTriangle className="inline-block mr-1" /> Movimiento
+                detectado
+              </>
+            ) : (
+              "Monitor Giroscopio"
+            )}
           </span>
         </div>
 
@@ -257,12 +269,12 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
                     : "text-red-400"
               }
             >
-               {currentDevice.battery_percent}%
+              {currentDevice.battery_percent}%
             </span>
           )}
           {currentDevice && (
             <span className="text-amber-400">
-               {currentDevice.temperature}°C
+              {currentDevice.temperature}°C
             </span>
           )}
         </div>
@@ -274,7 +286,7 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
             className="text-text-300 hover:text-text-100 transition-colors text-xs px-1.5 py-0.5 rounded hover:bg-bg-300"
             title={minimized ? "Expandir" : "Minimizar"}
           >
-            {minimized ? <IconChevronUp/> : <IconChevronDown/>}
+            {minimized ? <IconChevronUp /> : <IconChevronDown />}
           </button>
           <button
             onClick={handleClose}
@@ -293,7 +305,9 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
               {devices.map((dev) => (
                 <button
                   key={dev.dev_eui}
-                  onClick={() => dispatch({ type: "SELECT_DEVICE", id: dev.dev_eui })}
+                  onClick={() =>
+                    dispatch({ type: "SELECT_DEVICE", id: dev.dev_eui })
+                  }
                   className={`text-[10px] px-2 py-1 rounded-full border font-medium transition-colors ${
                     selectedDevice === dev.dev_eui
                       ? dev.alert
@@ -302,7 +316,8 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
                       : "border-transparent text-text-300 hover:text-text-200"
                   }`}
                 >
-                  {dev.alert && "X "}{dev.device_name ?? dev.dev_eui}
+                  {dev.alert && <IconX />}
+                  {dev.device_name ?? dev.dev_eui}
                 </button>
               ))}
             </div>
@@ -344,7 +359,9 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
                       {/* valor actual */}
                       <span className="text-text-300 ml-0.5">
                         {Number(
-                          deviceHistory[deviceHistory.length - 1]?.[k as keyof HistoryPoint] ?? 0,
+                          deviceHistory[deviceHistory.length - 1]?.[
+                            k as keyof HistoryPoint
+                          ] ?? 0,
                         ).toFixed(2)}
                       </span>
                     </span>
@@ -375,12 +392,36 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
           {currentDevice && (
             <div className="grid grid-cols-6 gap-1 px-2 pb-2 text-center">
               {[
-                { label: "Gyr X", value: currentDevice.gyro_x, color: "#3b82f6" },
-                { label: "Gyr Y", value: currentDevice.gyro_y, color: "#60a5fa" },
-                { label: "Gyr Z", value: currentDevice.gyro_z, color: "#93c5fd" },
-                { label: "Acc X", value: currentDevice.acc_x, color: "#ef4444" },
-                { label: "Acc Y", value: currentDevice.acc_y, color: "#f87171" },
-                { label: "Acc Z", value: currentDevice.acc_z, color: "#fca5a5" },
+                {
+                  label: "Gyr X",
+                  value: currentDevice.gyro_x,
+                  color: "#3b82f6",
+                },
+                {
+                  label: "Gyr Y",
+                  value: currentDevice.gyro_y,
+                  color: "#60a5fa",
+                },
+                {
+                  label: "Gyr Z",
+                  value: currentDevice.gyro_z,
+                  color: "#93c5fd",
+                },
+                {
+                  label: "Acc X",
+                  value: currentDevice.acc_x,
+                  color: "#ef4444",
+                },
+                {
+                  label: "Acc Y",
+                  value: currentDevice.acc_y,
+                  color: "#f87171",
+                },
+                {
+                  label: "Acc Z",
+                  value: currentDevice.acc_z,
+                  color: "#fca5a5",
+                },
               ].map(({ label, value, color }) => (
                 <div
                   key={label}

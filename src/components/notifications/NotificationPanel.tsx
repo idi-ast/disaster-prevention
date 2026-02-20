@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNotifications } from '../../hooks/useNotifications';
-import { Notification } from '../../services/logsNotificationsService';
+import { type Notification } from '../../services/logsNotificationsService';
+import { IconAlertTriangle, IconCheck, IconInfoCircle, IconX } from '@tabler/icons-react';
 
 interface NotificationPanelProps {
     maxHeight?: string;
@@ -46,31 +47,31 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
         await fetchNotifications(pagination.limit, pagination.offset + pagination.limit);
     };
 
-    const getNotificationColor = (type: string) => {
-        switch (type) {
-            case 'success':
-                return 'bg-green-100 border-green-400 text-green-800';
-            case 'error':
-                return 'bg-red-100 border-red-400 text-red-800';
-            case 'warning':
-                return 'bg-yellow-100 border-yellow-400 text-yellow-800';
-            case 'info':
-            default:
-                return 'bg-blue-100 border-blue-400 text-blue-800';
-        }
-    };
+    // const getNotificationColor = (type: string) => {
+    //     switch (type) {
+    //         case 'success':
+    //             return 'bg-green-100 border-green-400 text-green-800';
+    //         case 'error':
+    //             return 'bg-red-100 border-red-400 text-red-800';
+    //         case 'warning':
+    //             return 'bg-yellow-100 border-yellow-400 text-yellow-800';
+    //         case 'info':
+    //         default:
+    //             return 'bg-blue-100 border-blue-400 text-blue-800';
+    //     }
+    // };
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
             case 'success':
-                return '✓';
+                return <IconCheck/>;
             case 'error':
-                return '✕';
+                return <IconX/>;
             case 'warning':
-                return '⚠';
+                return <IconAlertTriangle/>;
             case 'info':
             default:
-                return 'ℹ';
+                return <IconInfoCircle/>;
         }
     };
 
@@ -222,9 +223,7 @@ export const NotificationBadge: React.FC = () => {
     );
 };
 
-/**
- * Componente para mostrar un sola notificación
- */
+
 interface SingleNotificationProps {
     notification: Notification;
     onMarkAsRead?: (id: number) => void;
