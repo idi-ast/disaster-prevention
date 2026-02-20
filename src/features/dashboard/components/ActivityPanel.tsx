@@ -440,7 +440,7 @@ function GyroPanel({
 
   const devices = gyroscope.gyro_devices;
   const alertCount = devices.filter((d) => d.alert).length;
-  const onlineCount = devices.filter((d) => d.status === "online").length;
+  const onlineCount = devices.filter((d) => d.status === "activo").length;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -479,7 +479,7 @@ function GyroPanel({
             const accMag = Math.sqrt(
               d.acc_x ** 2 + d.acc_y ** 2 + d.acc_z ** 2,
             ).toFixed(2);
-            const isOnline = d.status === "online";
+            const isOnline = d.status === "activo";
 
             return (
               <div
@@ -507,7 +507,7 @@ function GyroPanel({
                           : "bg-gray-400/15 text-gray-400"
                       }`}
                     >
-                      {isOnline ? "Online" : "Offline"}
+                      {isOnline ? "Activo" : "Desactivado"}
                     </span>
                   </div>
                 </div>

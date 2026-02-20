@@ -9,8 +9,8 @@ export function useGyroscope() {
   return useQuery({
     queryKey: [...QUERY_KEYS.gyroscope],
     queryFn: () => gyroscopeService.getGyroscope(),
-    staleTime: 30 * 1000,
-    refetchInterval: 30 * 1000, 
-    refetchIntervalInBackground: false, 
+    staleTime: 3 * 1000,
+    refetchInterval: 3 * 1000,
+    refetchIntervalInBackground: true,
   });
 }

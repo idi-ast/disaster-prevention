@@ -8,6 +8,7 @@ import SismoLayer from "../components/SismoLayer";
 import DangerZoneLayer from "../components/DangerZoneLayer";
 import GyroscopeLayer from "../components/GyroscopeLayer";
 import { ActivityPanel } from "../components/ActivityPanel";
+import { GyroFloatingPanel } from "../components/GyroFloatingPanel";
 import { useSismos } from "@/features/sismos/hooks/useSismos";
 import type {
   SismoData,
@@ -106,16 +107,17 @@ function Dashboard() {
   return (
     <div className="w-full h-full grid grid-cols-12">
       <div className="col-span-10 h-full flex flex-col">
-        <BaseMap
-          initialZoom={4}
-          initialCenter={{
-            longitude: -76.76690150776584,
-            latitude: 5.804109666166601,
-          }}
-          onMapRef={(ref) => {
-            mapRef.current = ref;
-          }}
-        >
+        <div className="relative flex-1 min-h-0">
+          <BaseMap
+            initialZoom={4}
+            initialCenter={{
+              longitude: -76.76690150776584,
+              latitude: 5.804109666166601,
+            }}
+            onMapRef={(ref) => {
+              mapRef.current = ref;
+            }}
+          >
           {/* <Marker latitude={5.804109666166601} longitude={-76.76690150776584}>
             <MarkerSensor />
           </Marker> */}
@@ -141,6 +143,8 @@ function Dashboard() {
             <DesastresGlobalesLayer desastres={desastresGlobales} />
           )}
         </BaseMap>
+          <GyroFloatingPanel gyroscope={gyroscope} />
+        </div>
         <BottomBar
           title="Actividad de Alertas"
           overlays={<div className="bg-100 px-3">Overlays</div>}
