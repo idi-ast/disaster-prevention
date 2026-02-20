@@ -7,5 +7,7 @@ export function useSismos() {
     queryFn: () => sismosService.getSismos(),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    refetchInterval: 30 * 1000, 
+    refetchIntervalInBackground: false, 
   });
 }

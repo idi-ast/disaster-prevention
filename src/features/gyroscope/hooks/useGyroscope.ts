@@ -10,5 +10,7 @@ export function useGyroscope() {
     queryKey: [...QUERY_KEYS.gyroscope],
     queryFn: () => gyroscopeService.getGyroscope(),
     staleTime: 30 * 1000,
+    refetchInterval: 30 * 1000, 
+    refetchIntervalInBackground: false, 
   });
 }
