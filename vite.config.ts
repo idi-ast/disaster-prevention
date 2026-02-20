@@ -14,19 +14,19 @@ export default defineConfig(({ mode }) => {
       host: env.VITE_SERVER_HOST === "true",
       allowedHosts: [env.VITE_SERVER_ALLOW_CORS || "disasters.iotlink.cl"],
       proxy: {
-        // Reenvía todas las peticiones /api al backend HTTP
-        // Esto evita Mixed Content (HTTPS → HTTP bloqueado por el navegador)
-        "/api": {
-          target: env.VITE_API_PROXY_TARGET || "http://10.20.7.98:3005",
-          changeOrigin: true,
-          secure: false,
-        },
-        // Proxy para el backend del sistema de monitoreo
+        // ⚠️ /api-system debe ir ANTES que /api para evitar que la regla
+        // más corta capture primero las rutas del sistema de monitoreo.
+        // El backend ya responde en /api-system/... así que no hay rewrite.
         "/api-system": {
           target: env.VITE_API_SYSTEM_PROXY_TARGET || "http://10.20.7.97:8000",
           changeOrigin: true,
           secure: false,
-          rewrite: (path) => path.replace(/^\/api-system/, "/api"),
+        },
+        // Reenvía todas las peticiones /api al backend principal
+        "/api": {
+          target: env.VITE_API_PROXY_TARGET || "http://10.20.7.98:3005",
+          changeOrigin: true,
+          secure: false,
         },
       },
     },
