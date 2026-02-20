@@ -13,6 +13,15 @@ export default defineConfig(({ mode }) => {
       port: Number(env.VITE_SERVER_PORT) || 3001,
       host: env.VITE_SERVER_HOST === "true",
       allowedHosts: [env.VITE_SERVER_ALLOW_CORS || "disasters.iotlink.cl"],
+      proxy: {
+        // Reenvía todas las peticiones /api al backend HTTP
+        // Esto evita Mixed Content (HTTPS → HTTP bloqueado por el navegador)
+        "/api": {
+          target: env.VITE_API_PROXY_TARGET || "http://10.20.7.98:3005",
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
 
     resolve: {

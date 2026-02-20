@@ -18,6 +18,18 @@ const customFetchImpl = async (
 ): Promise<Response> => {
   const urlStr = url.toString();
 
+  // Inyectar Authorization header si hay token guardado (fallback a cookies)
+  const token = localStorage.getItem("auth_token");
+  if (token) {
+    init = {
+      ...init,
+      headers: {
+        ...((init?.headers as Record<string, string>) || {}),
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  }
+
   if (urlStr.includes("/sign-in/email")) {
     // Inyectar service_code en el body
     if (init?.body) {

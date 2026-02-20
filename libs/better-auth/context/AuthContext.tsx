@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   type ReactNode,
 } from "react";
@@ -32,6 +33,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: boolean;
   } | null>(null);
 
+  // Verdadero mientras se intenta restaurar la sesión desde localStorage (tras F5)
+  const [isRestoringSession, setIsRestoringSession] = useState<boolean>(
+    () => !!localStorage.getItem("auth_token")
+  );
+
+  // Al montar (o tras un F5), si hay token en localStorage intentamos restaurar
+  // la sesión llamando a getSession() — customFetchImpl ya inyecta el header.
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+
+    authClient.getSession().then((result) => {
+      if (result?.data?.user) {
+        setLocalAuth({
+          user: result.data.user as BetterAuthUser,
+          isAuthenticated: true,
+        });
+      } else {
+        // Token inválido o expirado — limpiar
+        localStorage.removeItem("auth_token");
+      }
+    }).catch(() => {
+      localStorage.removeItem("auth_token");
+    }).finally(() => {
+      setIsRestoringSession(false);
+    });
+  }, []);
+
   const signInWithEmail = useCallback(
     async (email: string, password: string) => {
       setError(null);
@@ -43,6 +72,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const message = result.error.message || "Error al iniciar sesión";
         setError(message);
         throw new Error(message);
+      }
+
+      // Guardar token en localStorage para enviarlo como Authorization header
+      // (las cookies cross-origin en HTTP son bloqueadas por Chrome)
+      const token = (result.data as { session?: { token?: string } } | null)?.session?.token;
+      if (token) {
+        localStorage.setItem("auth_token", token);
       }
 
       // Guardar user en estado local para que isAuthenticated sea true
@@ -83,6 +119,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
     try {
       await authClient.signOut();
+      localStorage.removeItem("auth_token");
       setLocalAuth(null);
     } catch (err) {
       setError((err as Error).message);
@@ -101,7 +138,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value: AuthContextType = {
     session: effectiveSession,
     user: effectiveUser,
-    isLoading: isPending && !localAuth,
+    isLoading: isPending || isRestoringSession,
     isAuthenticated,
     error,
     signIn: {

@@ -43,9 +43,16 @@ class ApiClient {
       }
     }
 
+    // Inyectar token de autorización si existe (cookies cross-origin bloqueadas en HTTP)
+    const token = localStorage.getItem("auth_token");
+    const headers: Record<string, string> = { ...this.defaultHeaders };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const config: RequestInit = {
       method,
-      headers: this.defaultHeaders,
+      headers,
       credentials: "include",
     };
 
