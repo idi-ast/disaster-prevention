@@ -7,7 +7,7 @@ import { BarChartWrapper } from "@/libs/recharts";
 import SismoLayer from "../components/SismoLayer";
 import DangerZoneLayer from "../components/DangerZoneLayer";
 import GyroscopeLayer from "../components/GyroscopeLayer";
-import SismoResumen from "../components/SismoResumen";
+import { ActivityPanel } from "../components/ActivityPanel";
 import { useSismos } from "@/features/sismos/hooks/useSismos";
 import type {
   SismoData,
@@ -18,6 +18,8 @@ import type { Data } from "@/features/sismos/types/sismos.type";
 import { useEffect, useState } from "react";
 import { useDangerZones } from "@/features/dangerzone/hooks/useDangerZones";
 import { useGyroscope } from "@/features/gyroscope/hooks/useGyroscope";
+import { useDesastresGlobales } from "@/features/desastresGlobales/hooks/useDesastresGlobales";
+import DesastresGlobalesLayer from "../components/DesastresGlobalesLayer";
 
 function getMagnitudIntensidad(magnitude: number): SismoIntensidad {
   if (magnitude < 2.0) return "imperceptible";
@@ -71,9 +73,11 @@ const actividadAlertas = [
 ];
 
 function Dashboard() {
+  // Hooks para obtener datos de sismos, zonas de peligro y giroscopios
   const { data: sismos, isLoading } = useSismos();
   const { data: dangerZones } = useDangerZones();
   const { data: gyroscope } = useGyroscope();
+  const { data: desastresGlobales } = useDesastresGlobales();
 
   const sismosList: SismoData[] =
     sismos && sismos.data.length > 0 ? mapToSismoData(sismos.data) : [];
@@ -122,6 +126,10 @@ function Dashboard() {
           <GyroscopeLayer gyroscope={gyroscope} />
           {/* Sismos */}
           {sismos && <SismoLayer sismos={sismos} />}
+          {/* Desastres Globales */}
+          {desastresGlobales && (
+            <DesastresGlobalesLayer desastres={desastresGlobales} />
+          )}
         </BaseMap>
         <BottomBar
           title="Actividad de Alertas"
@@ -142,17 +150,13 @@ function Dashboard() {
       </div>
       <div className="col-span-2 h-full overflow-hidden">
         <RightBar title="Centro de Actividad" subTitle="Monitoreo preventivo">
-          {isLoading && (
-            <div className="p-4 text-sm text-text-200">Cargando sismos...</div>
-          )}
-          {!isLoading && sismoStats && (
-            <SismoResumen sismos={sismosList} stats={sismoStats} />
-          )}
-          {!isLoading && !sismoStats && (
-            <div className="p-4 text-sm text-text-200">
-              Sin datos sísmicos disponibles.
-            </div>
-          )}
+          <ActivityPanel
+            isLoadingSismos={isLoading}
+            sismosList={sismosList}
+            sismoStats={sismoStats}
+            desastres={desastresGlobales}
+            gyroscope={gyroscope}
+          />
         </RightBar>
       </div>
     </div>
