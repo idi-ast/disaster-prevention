@@ -21,6 +21,13 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        // Proxy para el backend del sistema de monitoreo
+        "/api-system": {
+          target: env.VITE_API_SYSTEM_PROXY_TARGET || "http://10.20.7.97:8000",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api-system/, "/api"),
+        },
       },
     },
 
