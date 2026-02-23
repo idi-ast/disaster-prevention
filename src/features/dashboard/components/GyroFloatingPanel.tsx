@@ -79,6 +79,7 @@ type State = {
   minimized: boolean;
   selectedDevice: string | null;
   activeGroup: GroupKey;
+  lastManualToggle: number;
 };
 
 type Action =
@@ -87,6 +88,7 @@ type Action =
       devices: GyroDevices[];
       points: Record<string, HistoryPoint>;
       motionDetected: boolean;
+      currentDeviceStatus?: string;
     }
   | { type: "CLOSE" }
   | { type: "TOGGLE_MINIMIZE" }
@@ -99,6 +101,7 @@ const initialState: State = {
   minimized: false,
   selectedDevice: null,
   activeGroup: "gyro",
+  lastManualToggle: 0,
 };
 
 function reducer(state: State, action: Action): State {
@@ -117,18 +120,22 @@ function reducer(state: State, action: Action): State {
         action.devices.some((d) => d.dev_eui === state.selectedDevice)
           ? state.selectedDevice
           : firstDevice;
+      
+      // No maximizar si el device actual está "inactivo"
+      const shouldMaximize = action.motionDetected && action.currentDeviceStatus !== "inactivo";
+      
       return {
         ...state,
         history: nextHistory,
         visible: true,
-        minimized: action.motionDetected ? false : state.minimized,
+        minimized: shouldMaximize ? false : state.minimized,
         selectedDevice: sel,
       };
     }
     case "CLOSE":
       return { ...state, visible: false };
     case "TOGGLE_MINIMIZE":
-      return { ...state, minimized: !state.minimized };
+      return { ...state, minimized: !state.minimized, lastManualToggle: Date.now() };
     case "SELECT_DEVICE":
       return { ...state, selectedDevice: action.id };
     case "SET_GROUP":
@@ -145,6 +152,10 @@ interface GyroFloatingPanelProps {
 export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { history, visible, minimized, selectedDevice, activeGroup } = state;
+
+  const devices = gyroscope?.gyro_devices ?? [];
+  const currentDevice = devices.find((d) => d.dev_eui === selectedDevice);
+  const deviceHistory = selectedDevice ? (history[selectedDevice] ?? []) : [];
 
   useEffect(() => {
     if (!gyroscope?.gyro_devices?.length) return;
@@ -179,12 +190,25 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
       devices: gyroscope.gyro_devices,
       points,
       motionDetected,
+      currentDeviceStatus: currentDevice?.status,
     });
-  }, [gyroscope]);
+  }, [gyroscope, currentDevice?.status]);
 
-  const devices = gyroscope?.gyro_devices ?? [];
-  const currentDevice = devices.find((d) => d.dev_eui === selectedDevice);
-  const deviceHistory = selectedDevice ? (history[selectedDevice] ?? []) : [];
+  // Minimizar cuando status es "inactivo"
+  useEffect(() => {
+    if (currentDevice) {
+      const timeSinceManualToggle = Date.now() - state.lastManualToggle;
+      const allowAutoToggle = timeSinceManualToggle > 5000; // Solo auto-toggle después de 5 segundos sin interacción manual
+      
+      if (allowAutoToggle) {
+        const shouldMinimize = currentDevice.status === "inactivo";
+        // Solo minimizar automáticamente, no maximizar
+        if (shouldMinimize && !minimized) {
+          dispatch({ type: "TOGGLE_MINIMIZE" });
+        }
+      }
+    }
+  }, [currentDevice?.status, currentDevice?.dev_eui, minimized, state.lastManualToggle]);
 
   const handleClose = useCallback(() => dispatch({ type: "CLOSE" }), []);
   const handleToggleMinimize = useCallback(
@@ -214,6 +238,9 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
 
   const group = GROUPS[activeGroup];
 
+  
+
+
   return (
     <div
       className={`absolute bottom-4 left-4 z-50 flex flex-col rounded-xl border shadow-2xl backdrop-blur-md transition-all duration-300 ${
@@ -223,7 +250,6 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
       }`}
       style={{ width: "480px" }}
     >
-      {/* ── Header ─────────────────────────────────────────────────── */}
       <div
         className={`flex items-center justify-between gap-2 px-3 py-2 rounded-t-xl border-b ${
           isAlert
@@ -251,7 +277,6 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
           </span>
         </div>
 
-        {/* KPI compactos */}
         <div className="flex items-center gap-3 shrink-0 text-xs font-mono text-text-300">
           <span>
             <span className="text-blue-400 font-semibold">|ω|</span> {gyroMag}
@@ -279,7 +304,6 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
           )}
         </div>
 
-        {/* Botones */}
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={handleToggleMinimize}
@@ -323,7 +347,6 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
             </div>
           )}
 
-          {/* ── Selector de grupo ──────────────────────────────────── */}
           <div className="flex gap-0.5 px-2 pt-2">
             {(Object.keys(GROUPS) as GroupKey[]).map((gk) => (
               <button
@@ -340,7 +363,6 @@ export function GyroFloatingPanel({ gyroscope }: GyroFloatingPanelProps) {
             ))}
           </div>
 
-          {/* ── Gráfico ────────────────────────────────────────────── */}
           <div className="px-2 pt-1 pb-2">
             {deviceHistory.length > 1 ? (
               <div className="relative">

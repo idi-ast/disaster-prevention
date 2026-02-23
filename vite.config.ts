@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       host: env.VITE_SERVER_HOST === "true",
       allowedHosts: [env.VITE_SERVER_ALLOW_CORS || "disasters.iotlink.cl"],
       proxy: {
-        // ⚠️ /api-system debe ir ANTES que /api para evitar que la regla
+        // /api-system debe ir ANTES que /api para evitar que la regla
         // más corta capture primero las rutas del sistema de monitoreo.
         // El backend ya responde en /api-system/... así que no hay rewrite.
         "/api-system": {
